@@ -1,0 +1,361 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Orders | OFFGRID Admin</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #eae7df;
+            color: #171717;
+        }
+
+        header {
+            background: #111;
+            color: white;
+            padding: 22px 7%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            color: white;
+            text-decoration: none;
+            font-size: 25px;
+            font-weight: 900;
+            letter-spacing: 2px;
+        }
+
+        .header-link {
+            color: white;
+            text-decoration: none;
+            font-size: 13px;
+        }
+
+        main {
+            max-width: 1200px;
+            margin: 45px auto;
+            padding: 0 20px;
+        }
+
+        .heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 32px;
+            letter-spacing: -1px;
+        }
+
+        .heading p {
+            color: #777;
+            font-size: 13px;
+            margin-top: 7px;
+        }
+
+        .order-card {
+            background: white;
+            border: 1px solid #ddd;
+            margin-bottom: 22px;
+        }
+
+        .order-top {
+            padding: 20px 24px;
+            background: #f5f4f0;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .order-top p {
+            color: #777;
+            font-size: 11px;
+            margin-bottom: 6px;
+        }
+
+        .order-top strong {
+            font-size: 14px;
+        }
+
+        .order-content {
+            padding: 24px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        h2 {
+            font-size: 15px;
+            margin-bottom: 15px;
+        }
+
+        .customer-info,
+        .product-info {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.9;
+        }
+
+        .product-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            border-bottom: 1px solid #eee;
+            padding: 10px 0;
+            font-size: 13px;
+        }
+
+        .product-row strong {
+            color: #171717;
+        }
+
+        .order-bottom {
+            border-top: 1px solid #eee;
+            padding: 20px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .total {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .status-form {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        select {
+            padding: 10px;
+            border: 1px solid #ccc;
+            background: white;
+            font-size: 13px;
+        }
+
+        button {
+            padding: 11px 18px;
+            background: #111;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background: #333;
+        }
+
+        .empty {
+            background: white;
+            padding: 50px 20px;
+            text-align: center;
+            border: 1px solid #ddd;
+            color: #777;
+        }
+
+        .flash {
+            background: #f5e5e5;
+            color: #8b2525;
+            padding: 12px;
+            margin-bottom: 20px;
+            font-size: 13px;
+        }
+
+        @media (max-width: 700px) {
+            .order-content {
+                grid-template-columns: 1fr;
+            }
+
+            .order-bottom {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <a href="{{ url_for('admin_dashboard') }}" class="logo">OFFGRID® ADMIN</a>
+    <a href="{{ url_for('admin_dashboard') }}" class="header-link">
+        ← BACK TO DASHBOARD
+    </a>
+</header>
+
+<main>
+
+    <div class="heading">
+        <div>
+            <h1>MANAGE ORDERS.</h1>
+            <p>View and manage customer purchases.</p>
+        </div>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="flash">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    {% if orders %}
+
+        {% for order in orders %}
+
+            <section class="order-card">
+
+                <div class="order-top">
+
+                    <div>
+                        <p>ORDER ID</p>
+                        <strong>#{{ order.order_id }}</strong>
+                    </div>
+
+                    <div>
+                        <p>ORDER DATE</p>
+                        <strong>{{ order.order_date }}</strong>
+                    </div>
+
+                    <div>
+                        <p>CUSTOMER</p>
+                        <strong>{{ order.full_name }}</strong>
+                    </div>
+
+                    <div>
+                        <p>EMAIL</p>
+                        <strong>{{ order.email }}</strong>
+                    </div>
+
+                </div>
+
+                <div class="order-content">
+
+                    <div>
+                        <h2>ORDERED PRODUCTS</h2>
+
+                        {% for item in order.items %}
+
+                            <div class="product-row">
+                                <div>
+                                    <strong>{{ item.product_name }}</strong><br>
+                                    <span>
+                                        Size: {{ item.size }} |
+                                        Qty: {{ item.quantity }}
+                                    </span>
+                                </div>
+
+                                <strong>
+                                    ₹{{ "%.2f"|format(item.price_at_purchase * item.quantity) }}
+                                </strong>
+                            </div>
+
+                        {% endfor %}
+                    </div>
+
+                    <div>
+                        <h2>DELIVERY INFORMATION</h2>
+
+                        <div class="customer-info">
+                            {% if order.address %}
+                                {{ order.address.full_name }}<br>
+                                {{ order.address.phone }}<br>
+                                {{ order.address.address_line }}<br>
+                                {{ order.address.city }},
+                                {{ order.address.state }} -
+                                {{ order.address.pincode }}
+                            {% else %}
+                                Delivery address not available.
+                            {% endif %}
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="order-bottom">
+
+                    <div class="total">
+                        TOTAL: ₹{{ "%.2f"|format(order.total_amount) }}
+                    </div>
+
+                    <form
+                        method="POST"
+                        action="{{ url_for('update_order_status', order_id=order.order_id) }}"
+                        class="status-form"
+                    >
+
+                        <select name="status" required>
+                            <option value="Pending"
+                                {% if order.status == 'Pending' %}selected{% endif %}>
+                                Pending
+                            </option>
+
+                            <option value="Processing"
+                                {% if order.status == 'Processing' %}selected{% endif %}>
+                                Processing
+                            </option>
+
+                            <option value="Shipped"
+                                {% if order.status == 'Shipped' %}selected{% endif %}>
+                                Shipped
+                            </option>
+
+                            <option value="Delivered"
+                                {% if order.status == 'Delivered' %}selected{% endif %}>
+                                Delivered
+                            </option>
+
+                            <option value="Cancelled"
+                                {% if order.status == 'Cancelled' %}selected{% endif %}>
+                                Cancelled
+                            </option>
+                        </select>
+
+                        <button type="submit">UPDATE STATUS</button>
+
+                    </form>
+
+                </div>
+
+            </section>
+
+        {% endfor %}
+
+    {% else %}
+
+        <div class="empty">
+            <h2>NO ORDERS YET.</h2>
+            <p>Customer orders will appear here.</p>
+        </div>
+
+    {% endif %}
+
+</main>
+
+</body>
+</html>

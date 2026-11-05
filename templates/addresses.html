@@ -1,0 +1,324 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Addresses | OFFGRID</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #eae7df;
+            color: #171717;
+        }
+
+        header {
+            background: #111;
+            color: white;
+            padding: 22px 7%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            color: white;
+            text-decoration: none;
+            font-size: 25px;
+            font-weight: 900;
+            letter-spacing: 2px;
+        }
+
+        header a.back {
+            color: white;
+            text-decoration: none;
+            font-size: 13px;
+        }
+
+        main {
+            max-width: 1050px;
+            margin: 50px auto;
+            padding: 0 20px;
+        }
+
+        .page-heading {
+            margin-bottom: 30px;
+        }
+
+        .page-heading h1 {
+            font-size: 32px;
+            letter-spacing: -1px;
+            margin-bottom: 8px;
+        }
+
+        .page-heading p {
+            color: #777;
+            font-size: 14px;
+        }
+
+        .address-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            align-items: start;
+        }
+
+        .panel {
+            background: white;
+            padding: 30px;
+            border: 1px solid #ddd;
+        }
+
+        .panel h2 {
+            font-size: 20px;
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            margin-bottom: 18px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #111;
+        }
+
+        .two-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .default-option {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            margin-bottom: 20px;
+            font-size: 13px;
+        }
+
+        .default-option input {
+            width: auto;
+            margin: 0;
+        }
+
+        button {
+            background: #111;
+            color: white;
+            border: none;
+            padding: 14px 20px;
+            width: 100%;
+            cursor: pointer;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        button:hover {
+            background: #333;
+        }
+
+        .address-card {
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+
+        .address-card h3 {
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .address-card p {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.7;
+        }
+
+        .default-tag {
+            display: inline-block;
+            background: #eee;
+            padding: 5px 8px;
+            font-size: 10px;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+
+        .empty-message {
+            color: #777;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .flash {
+            padding: 12px;
+            margin-bottom: 20px;
+            background: #f5e5e5;
+            color: #8b2525;
+            font-size: 13px;
+        }
+
+        @media (max-width: 700px) {
+            .address-layout {
+                grid-template-columns: 1fr;
+            }
+
+            main {
+                margin-top: 30px;
+            }
+
+            .panel {
+                padding: 22px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <a href="{{ url_for('home') }}" class="logo">OFFGRID®</a>
+    <a href="{{ url_for('home') }}" class="back">← BACK TO STORE</a>
+</header>
+
+<main>
+
+    <div class="page-heading">
+        <h1>MY ADDRESSES.</h1>
+        <p>Manage your saved delivery addresses.</p>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="flash">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <div class="address-layout">
+
+        <section class="panel">
+            <h2>ADD NEW ADDRESS</h2>
+
+            <form method="POST" action="{{ url_for('add_address') }}">
+
+                <label>FULL NAME</label>
+                <input type="text" name="full_name"
+                       maxlength="100" required>
+
+                <label>PHONE NUMBER</label>
+                <input type="tel" name="phone"
+                       pattern="[0-9]{10}"
+                       maxlength="10" minlength="10" required>
+
+                <label>ADDRESS</label>
+                <input type="text" name="address_line"
+                       maxlength="255"
+                       placeholder="House number, street, area"
+                       required>
+
+                <div class="two-columns">
+                    <div>
+                        <label>CITY</label>
+                        <input type="text" name="city"
+                               maxlength="100" required>
+                    </div>
+
+                    <div>
+                        <label>STATE</label>
+                        <input type="text" name="state"
+                               maxlength="100" required>
+                    </div>
+                </div>
+
+                <div class="two-columns">
+                    <div>
+                        <label>PINCODE</label>
+                        <input type="text" name="pincode"
+                               pattern="[0-9]{6}"
+                               maxlength="6" minlength="6" required>
+                    </div>
+
+                    <div>
+                        <label>LANDMARK</label>
+                        <input type="text" name="landmark"
+                               maxlength="150"
+                               placeholder="Optional">
+                    </div>
+                </div>
+
+                <label class="default-option">
+                    <input type="checkbox" name="is_default">
+                    Set as default address
+                </label>
+
+                <button type="submit">SAVE ADDRESS</button>
+
+            </form>
+        </section>
+
+        <section class="panel">
+            <h2>SAVED ADDRESSES</h2>
+
+            {% if addresses %}
+
+                {% for address in addresses %}
+
+                    <div class="address-card">
+
+                        {% if address.is_default %}
+                            <span class="default-tag">DEFAULT ADDRESS</span>
+                        {% endif %}
+
+                        <h3>{{ address.full_name }}</h3>
+
+                        <p>
+                            {{ address.address_line }}<br>
+                            {{ address.city }}, {{ address.state }}<br>
+                            PIN: {{ address.pincode }}<br>
+                            Phone: {{ address.phone }}
+
+                            {% if address.landmark %}
+                                <br>Landmark: {{ address.landmark }}
+                            {% endif %}
+                        </p>
+
+                    </div>
+
+                {% endfor %}
+
+            {% else %}
+
+                <p class="empty-message">
+                    You haven't saved any delivery addresses yet.
+                    Add your first address using the form.
+                </p>
+
+            {% endif %}
+
+        </section>
+
+    </div>
+
+</main>
+
+</body>
+</html>

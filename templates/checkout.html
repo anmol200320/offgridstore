@@ -1,0 +1,447 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout | OFFGRID</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #eae7df;
+            color: #171717;
+        }
+
+        header {
+            background: #111;
+            padding: 22px 7%;
+        }
+
+        .logo {
+            color: white;
+            text-decoration: none;
+            font-size: 25px;
+            font-weight: 900;
+            letter-spacing: 2px;
+        }
+
+        main {
+            max-width: 1100px;
+            margin: 45px auto;
+            padding: 0 20px;
+        }
+
+        h1 {
+            font-size: 34px;
+            letter-spacing: -1px;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #777;
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+
+        .checkout-layout {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 25px;
+            align-items: start;
+        }
+
+        .panel {
+            background: white;
+            padding: 28px;
+            border: 1px solid #ddd;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            font-size: 19px;
+            margin-bottom: 22px;
+        }
+
+        .address-option {
+            border: 1px solid #ddd;
+            padding: 17px;
+            margin-bottom: 12px;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+
+        .address-option input {
+            margin-top: 4px;
+        }
+
+        .address-option strong {
+            font-size: 14px;
+        }
+
+        .address-option p {
+            color: #777;
+            font-size: 13px;
+            line-height: 1.7;
+            margin-top: 5px;
+        }
+
+        .add-address {
+            display: inline-block;
+            margin-top: 12px;
+            color: #111;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .payment-option {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px;
+            border: 1px solid #ddd;
+            font-size: 14px;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+
+        .payment-option input {
+            accent-color: #111;
+            flex-shrink: 0;
+        }
+
+        .payment-details {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .payment-details small {
+            color: #777;
+            font-size: 12px;
+        }
+
+        .payment-option.disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            background: #fafafa;
+        }
+
+        .payment-option.disabled input {
+            cursor: not-allowed;
+        }
+
+        .coming-soon {
+            margin-left: auto;
+            font-size: 10px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            color: #777;
+            white-space: nowrap;
+        }
+
+        .product-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+        }
+
+        .product-info {
+            line-height: 1.7;
+        }
+
+        .product-info span {
+            color: #777;
+            font-size: 12px;
+        }
+
+        .price {
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            font-size: 15px;
+            gap: 10px;
+        }
+
+        .grand-total {
+            font-size: 20px;
+            font-weight: bold;
+            border-top: 1px solid #ddd;
+            padding-top: 18px;
+        }
+
+        .place-order {
+            width: 100%;
+            padding: 16px;
+            background: #111;
+            color: white;
+            border: none;
+            margin-top: 25px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            cursor: pointer;
+        }
+
+        .place-order:hover {
+            background: #333;
+        }
+
+        .empty-message {
+            color: #777;
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        .flash {
+            background: #f5e5e5;
+            padding: 12px;
+            margin-bottom: 15px;
+            font-size: 13px;
+        }
+
+        @media (max-width: 750px) {
+            .checkout-layout {
+                grid-template-columns: 1fr;
+            }
+
+            main {
+                margin-top: 30px;
+            }
+
+            .panel {
+                padding: 20px;
+            }
+
+            .coming-soon {
+                font-size: 9px;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .payment-option {
+                gap: 8px;
+                padding: 12px;
+            }
+
+            .payment-details small {
+                font-size: 11px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <a href="{{ url_for('home') }}" class="logo">OFFGRID®</a>
+</header>
+
+<main>
+
+    <h1>CHECKOUT.</h1>
+    <p class="subtitle">Almost yours. Complete your order below.</p>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <p class="flash">{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <form method="POST" action="{{ url_for('place_order') }}">
+
+        <div class="checkout-layout">
+
+            <div>
+
+                <!-- DELIVERY ADDRESS -->
+
+                <section class="panel">
+                    <h2>01 / DELIVERY ADDRESS</h2>
+
+                    {% if addresses %}
+
+                        {% for address in addresses %}
+
+                            <label class="address-option">
+
+                                <input
+                                    type="radio"
+                                    name="address_id"
+                                    value="{{ address.address_id }}"
+                                    {% if address.is_default %}checked{% endif %}
+                                    required
+                                >
+
+                                <div>
+                                    <strong>{{ address.full_name }}</strong>
+
+                                    <p>
+                                        {{ address.address_line }}<br>
+                                        {{ address.city }}, {{ address.state }} -
+                                        {{ address.pincode }}<br>
+                                        Phone: {{ address.phone }}
+                                    </p>
+                                </div>
+
+                            </label>
+
+                        {% endfor %}
+
+                    {% else %}
+
+                        <p class="empty-message">
+                            You haven't saved a delivery address yet.
+                        </p>
+
+                    {% endif %}
+
+                    <a href="{{ url_for('addresses') }}" class="add-address">
+                        + ADD A NEW ADDRESS
+                    </a>
+
+                </section>
+
+                <!-- PAYMENT METHOD -->
+
+                <section class="panel">
+
+                    <h2>02 / PAYMENT METHOD</h2>
+
+                    <label class="payment-option">
+
+                        <input
+                            type="radio"
+                            name="payment_method"
+                            value="COD"
+                            checked
+                            required
+                        >
+
+                        <span class="payment-details">
+                            <strong>Cash on Delivery</strong>
+                            <small>Pay when your order arrives.</small>
+                        </span>
+
+                    </label>
+
+                    <!-- RAZORPAY PLACEHOLDER -->
+
+                    <label class="payment-option disabled">
+
+                        <input
+                            type="radio"
+                            name="payment_method"
+                            value="razorpay"
+                            disabled
+                        >
+
+                        <span class="payment-details">
+                            <strong>Online Payment</strong>
+                            <small>UPI, Cards, Net Banking & Wallets</small>
+                        </span>
+
+                        <span class="coming-soon">
+                            COMING SOON
+                        </span>
+
+                    </label>
+
+                </section>
+
+            </div>
+
+            <!-- ORDER SUMMARY -->
+
+            <aside class="panel">
+
+                <h2>03 / ORDER SUMMARY</h2>
+
+                {% if cart_items %}
+
+                    {% for item in cart_items %}
+
+                        <div class="product-row">
+
+                            <div class="product-info">
+                                <strong>{{ item.product_name }}</strong><br>
+
+                                <span>
+                                    Size: {{ item.size }} |
+                                    Qty: {{ item.quantity }}
+                                </span>
+                            </div>
+
+                            <div class="price">
+                                ₹{{ "%.2f"|format(item.price * item.quantity) }}
+                            </div>
+
+                        </div>
+
+                    {% endfor %}
+
+                    <div class="total-row">
+                        <span>Subtotal</span>
+                        <strong>₹{{ "%.2f"|format(total) }}</strong>
+                    </div>
+
+                    <div class="total-row">
+                        <span>Delivery</span>
+                        <strong>Calculated at checkout</strong>
+                    </div>
+
+                    <div class="total-row grand-total">
+                        <span>Total</span>
+                        <span>₹{{ "%.2f"|format(total) }}</span>
+                    </div>
+
+                    {% if addresses %}
+
+                        <button type="submit" class="place-order">
+                            PLACE ORDER
+                        </button>
+
+                    {% else %}
+
+                        <p class="empty-message" style="margin-top:20px;">
+                            Add a delivery address before placing your order.
+                        </p>
+
+                    {% endif %}
+
+                {% else %}
+
+                    <p class="empty-message">
+                        Your cart is empty. Add products before checkout.
+                    </p>
+
+                    <a href="{{ url_for('shop') }}">Continue shopping</a>
+
+                {% endif %}
+
+            </aside>
+
+        </div>
+
+    </form>
+
+</main>
+
+</body>
+</html>

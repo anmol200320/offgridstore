@@ -1,0 +1,638 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OFFGRID | Admin Dashboard</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 30px 5%;
+            font-family: Arial, sans-serif;
+            background: #f5f4ef;
+            color: #111;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            background: #111;
+            color: white;
+            padding: 20px 25px;
+        }
+
+        header h1 {
+            letter-spacing: 4px;
+            margin: 0;
+        }
+
+        header a {
+            color: white;
+            text-decoration: none;
+            margin-right: 15px;
+        }
+
+        h2 {
+            letter-spacing: 1px;
+        }
+
+        .panel, .product {
+            background: white;
+            padding: 25px;
+            margin: 25px 0;
+            border: 1px solid #ddd;
+        }
+
+        input, textarea, select, button {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0 16px;
+            font: inherit;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        button {
+            background: #111;
+            color: white;
+            border: 0;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background: #333;
+        }
+
+        .logout-form {
+            display: inline;
+        }
+
+        .logout-form button {
+            width: auto;
+            margin: 0;
+            padding: 10px 16px;
+        }
+
+        .size-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin: 15px 0;
+        }
+
+        .size-option {
+            border: 1px solid #ccc;
+            padding: 12px;
+        }
+
+        .size-option label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .size-option input[type="checkbox"] {
+            width: auto;
+            margin: 0;
+        }
+
+        .size-option input[type="number"] {
+            margin: 12px 0 0;
+        }
+
+        .product img {
+            width: 110px;
+            height: 130px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .message {
+            padding: 12px;
+            background: #e5e5e5;
+            margin: 12px 0;
+        }
+
+        .inventory {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .inventory span {
+            background: #eee;
+            padding: 8px 12px;
+        }
+
+        .product-actions {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .product-actions form {
+            margin: 0;
+        }
+
+        .product-actions button {
+            height: 100%;
+        }
+
+        .secondary-button {
+            background: #555;
+        }
+
+        .danger-button {
+            background: #8b1e1e;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 6px 10px;
+            background: #e8e8e8;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .section-note {
+            color: #555;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        hr {
+            border: 0;
+            border-top: 1px solid #ddd;
+            margin: 25px 0;
+        }
+
+        @media(max-width: 650px) {
+            body {
+                padding: 15px;
+            }
+
+            .size-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .product-actions {
+                grid-template-columns: 1fr;
+            }
+
+            header {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>OFFGRID®</h1>
+
+    <div>
+        <a href="{{ url_for('shop') }}">VIEW STORE →</a>
+
+        <form method="POST"
+              action="{{ url_for('admin_logout') }}"
+              class="logout-form">
+
+            <button type="submit">LOG OUT</button>
+        </form>
+    </div>
+</header>
+
+<h2>ADMIN DASHBOARD</h2>
+
+{% for message in get_flashed_messages() %}
+    <p class="message">{{ message }}</p>
+{% endfor %}
+
+
+<!-- ADD NEW PRODUCT -->
+
+<section class="panel">
+
+    <h2>ADD NEW PRODUCT</h2>
+
+    <form method="POST"
+          enctype="multipart/form-data"
+          action="{{ url_for('admin') }}">
+
+        <label>Product Name *</label>
+        <input type="text"
+               name="product_name"
+               maxlength="150"
+               required>
+
+        <label>Description</label>
+        <textarea name="description" rows="3"></textarea>
+
+        <label>Price (₹) *</label>
+        <input type="number"
+               name="price"
+               min="0"
+               step="0.01"
+               required>
+
+        <label>Category *</label>
+
+        <select name="category_id"
+                id="category"
+                required>
+
+            <option value="">Choose a category</option>
+
+            {% for category in categories %}
+                <option value="{{ category.category_id }}"
+                        data-name="{{ category.category_name }}">
+                    {{ category.category_name }}
+                </option>
+            {% endfor %}
+
+        </select>
+
+        <h3>AVAILABLE SIZES</h3>
+
+        <p class="section-note">
+            Select the sizes you want to offer and enter the stock
+            quantity for each selected size.
+        </p>
+
+        <div id="clothing-sizes" class="size-grid">
+
+            {% for size in ["XS", "S", "M", "L", "XL", "XXL"] %}
+
+                <div class="size-option">
+
+                    <label>
+                        <input type="checkbox"
+                               name="sizes"
+                               value="{{ size }}"
+                               class="size-checkbox">
+
+                        {{ size }}
+                    </label>
+
+                    <input type="number"
+                           name="stock_{{ size }}"
+                           min="0"
+                           value="0"
+                           placeholder="Quantity"
+                           class="quantity-input"
+                           disabled>
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+        <div id="accessory-size" style="display:none;">
+
+            <label>One Size Quantity *</label>
+
+            <input type="number"
+                   name="stock_One Size"
+                   min="0"
+                   value="0">
+
+        </div>
+
+        <label>Product Image *</label>
+
+        <input type="file"
+               name="image"
+               accept=".jpg,.jpeg,.png,.webp"
+               required>
+
+        <button type="submit">PUBLISH PRODUCT</button>
+
+    </form>
+
+</section>
+
+
+<!-- EXISTING PRODUCTS -->
+
+<h2>EXISTING PRODUCTS</h2>
+
+{% for product in products %}
+
+    <section class="product">
+
+        {% if product.image_url %}
+            <img src="{{ url_for('static', filename=product.image_url) }}"
+                 alt="{{ product.product_name }}">
+        {% endif %}
+
+        <h3>{{ product.product_name }}</h3>
+
+        <p><strong>Product ID:</strong> {{ product.product_id }}</p>
+
+        <p><strong>Price:</strong> ₹{{ product.price }}</p>
+
+        <p><strong>Total Stock:</strong> {{ product.stock }}</p>
+
+        <p>
+            <strong>Status:</strong>
+
+            {% if product.is_active %}
+                <span class="status">ACTIVE</span>
+            {% else %}
+                <span class="status">HIDDEN</span>
+            {% endif %}
+        </p>
+
+        <h4>SIZE-WISE INVENTORY</h4>
+
+        <div class="inventory">
+
+            {% for size in product.sizes %}
+
+                <span>
+                    {{ size.size }}: {{ size.stock }}
+                </span>
+
+            {% else %}
+
+                <span>No size inventory recorded yet.</span>
+
+            {% endfor %}
+
+        </div>
+
+
+        <!-- UPDATE SIZE INVENTORY -->
+
+        <hr>
+
+        <h4>MANAGE SIZE INVENTORY</h4>
+
+        <form method="POST"
+              action="{{ url_for('update_product_sizes', product_id=product.product_id) }}">
+
+            {% if product.category_name|lower == "accessories" %}
+
+                <label>One Size Quantity</label>
+
+                <input type="number"
+                       name="stock_One Size"
+                       min="0"
+                       value="{{ product.sizes[0].stock if product.sizes else 0 }}">
+
+            {% else %}
+
+                <div class="size-grid">
+
+                    {% for size in ["XS", "S", "M", "L", "XL", "XXL"] %}
+
+                        {% set current_size = namespace(stock=0, found=false) %}
+
+                        {% for item in product.sizes %}
+
+                            {% if item.size == size %}
+                                {% set current_size.stock = item.stock %}
+                                {% set current_size.found = true %}
+                            {% endif %}
+
+                        {% endfor %}
+
+                        <div class="size-option">
+
+                            <label>
+
+                                <input type="checkbox"
+                                       name="sizes"
+                                       value="{{ size }}"
+                                       class="inventory-size-checkbox"
+                                       {% if current_size.found %}checked{% endif %}>
+
+                                {{ size }}
+
+                            </label>
+
+                            <input type="number"
+                                   name="stock_{{ size }}"
+                                   min="0"
+                                   value="{{ current_size.stock }}">
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+            {% endif %}
+
+            <button type="submit">UPDATE INVENTORY</button>
+
+        </form>
+
+
+        <!-- EDIT PRODUCT DETAILS -->
+
+        <hr>
+
+        <h4>EDIT PRODUCT DETAILS</h4>
+
+        <form method="POST"
+              action="{{ url_for('edit_product', product_id=product.product_id) }}"
+              enctype="multipart/form-data">
+
+            <label>Product Name</label>
+
+            <input type="text"
+                   name="product_name"
+                   value="{{ product.product_name }}"
+                   maxlength="150"
+                   required>
+
+            <label>Description</label>
+
+            <textarea name="description"
+                      rows="3">{{ product.description or '' }}</textarea>
+
+            <label>Price (₹)</label>
+
+            <input type="number"
+                   name="price"
+                   min="0"
+                   step="0.01"
+                   value="{{ product.price }}"
+                   required>
+
+            <label>Category</label>
+
+            <select name="category_id" required>
+
+                {% for category in categories %}
+
+                    <option value="{{ category.category_id }}"
+                        {% if category.category_id == product.category_id %}
+                            selected
+                        {% endif %}>
+
+                        {{ category.category_name }}
+
+                    </option>
+
+                {% endfor %}
+
+            </select>
+
+            <label>Replace Product Image (optional)</label>
+
+            <input type="file"
+                   name="image"
+                   accept=".jpg,.jpeg,.png,.webp">
+
+            <button type="submit">SAVE PRODUCT CHANGES</button>
+
+        </form>
+
+
+        <!-- PRODUCT ACTIONS -->
+
+        <hr>
+
+        <h4>PRODUCT ACTIONS</h4>
+
+        <div class="product-actions">
+
+            <form method="POST"
+                  action="{{ url_for('toggle_product', product_id=product.product_id) }}">
+
+                <button type="submit" class="secondary-button">
+
+                    {% if product.is_active %}
+                        HIDE PRODUCT
+                    {% else %}
+                        SHOW PRODUCT
+                    {% endif %}
+
+                </button>
+
+            </form>
+
+            <form method="POST"
+                  action="{{ url_for('delete_product', product_id=product.product_id) }}"
+                  onsubmit="return confirm('Are you sure you want to delete this product?');">
+
+                <button type="submit" class="danger-button">
+                    DELETE PRODUCT
+                </button>
+
+            </form>
+
+        </div>
+
+    </section>
+
+{% else %}
+
+    <p>No products added yet.</p>
+
+{% endfor %}
+
+
+<script>
+
+// ADD PRODUCT SIZE SELECTION
+
+const categorySelect = document.getElementById("category");
+const clothingSizes = document.getElementById("clothing-sizes");
+const accessorySize = document.getElementById("accessory-size");
+
+const checkboxes = document.querySelectorAll(".size-checkbox");
+
+const accessoryQuantity = document.querySelector(
+    'input[name="stock_One Size"]'
+);
+
+function updateSizeOptions() {
+
+    const selectedOption =
+        categorySelect.options[categorySelect.selectedIndex];
+
+    const categoryName =
+        selectedOption?.dataset.name?.toLowerCase() || "";
+
+    const isAccessory = categoryName === "accessories";
+
+    clothingSizes.style.display = isAccessory ? "none" : "grid";
+    accessorySize.style.display = isAccessory ? "block" : "none";
+
+    accessoryQuantity.disabled = !isAccessory;
+
+    checkboxes.forEach(checkbox => {
+
+        const quantityInput =
+            checkbox.closest(".size-option")
+            .querySelector(".quantity-input");
+
+        checkbox.disabled = isAccessory;
+        quantityInput.disabled = isAccessory || !checkbox.checked;
+
+        checkbox.required = false;
+
+    });
+
+    if (!isAccessory) {
+
+        const anySelected =
+            document.querySelector(".size-checkbox:checked");
+
+        if (!anySelected && checkboxes.length > 0) {
+            checkboxes[0].required = true;
+        }
+
+    }
+}
+
+checkboxes.forEach(checkbox => {
+    checkbox.addEventListener("change", updateSizeOptions);
+});
+
+categorySelect.addEventListener("change", updateSizeOptions);
+
+updateSizeOptions();
+
+
+// EXISTING PRODUCT INVENTORY SIZE SELECTION
+
+document.querySelectorAll(".inventory-size-checkbox").forEach(checkbox => {
+
+    checkbox.addEventListener("change", function() {
+
+        const sizeOption = this.closest(".size-option");
+
+        const quantityInput =
+            sizeOption.querySelector('input[type="number"]');
+
+        if (!this.checked) {
+            quantityInput.value = 0;
+        }
+
+    });
+
+});
+
+</script>
+
+</body>
+</html>

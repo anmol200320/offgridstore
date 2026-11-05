@@ -1,0 +1,310 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us | OFFGRID</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #111;
+            color: #f5f5f5;
+            font-family: Arial, Helvetica, sans-serif;
+            line-height: 1.6;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 22px 7%;
+            border-bottom: 1px solid #333;
+        }
+
+        .logo {
+            font-size: 27px;
+            font-weight: 900;
+            letter-spacing: 3px;
+        }
+
+        nav {
+            display: flex;
+            gap: 25px;
+            flex-wrap: wrap;
+        }
+
+        nav a {
+            color: #ccc;
+            font-size: 14px;
+        }
+
+        nav a:hover,
+        nav a.active {
+            color: white;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 80px 6% 55px;
+            background: #191919;
+        }
+
+        .eyebrow {
+            font-size: 12px;
+            letter-spacing: 4px;
+            color: #aaa;
+            text-transform: uppercase;
+        }
+
+        h1 {
+            font-size: clamp(42px, 7vw, 76px);
+            line-height: 1.1;
+            margin: 18px 0;
+            font-weight: 900;
+        }
+
+        .hero p {
+            max-width: 550px;
+            margin: auto;
+            color: #aaa;
+        }
+
+        .contact-container {
+            max-width: 1050px;
+            margin: auto;
+            padding: 65px 7%;
+            display: grid;
+            grid-template-columns: 0.8fr 1.2fr;
+            gap: 60px;
+        }
+
+        h2 {
+            font-size: 30px;
+            margin-bottom: 15px;
+        }
+
+        .intro {
+            color: #aaa;
+            margin-bottom: 30px;
+        }
+
+        .detail {
+            margin: 25px 0;
+        }
+
+        .detail h3 {
+            font-size: 15px;
+            margin-bottom: 5px;
+        }
+
+        .detail p {
+            color: #aaa;
+            overflow-wrap: anywhere;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 7px;
+            font-size: 13px;
+            color: #ccc;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            padding: 14px;
+            background: #191919;
+            border: 1px solid #383838;
+            color: white;
+            font: inherit;
+            outline: none;
+        }
+
+        input:focus,
+        textarea:focus {
+            border-color: #aaa;
+        }
+
+        textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        button {
+            padding: 15px;
+            border: none;
+            background: #f2f2f2;
+            color: #111;
+            font-weight: bold;
+            letter-spacing: 1px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #ccc;
+        }
+
+        .form-note {
+            color: #888;
+            font-size: 12px;
+        }
+
+        footer {
+            padding: 25px 7%;
+            border-top: 1px solid #333;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            color: #888;
+            font-size: 12px;
+        }
+
+        @media (max-width: 700px) {
+            header {
+                flex-direction: column;
+                gap: 15px;
+                padding: 20px 5%;
+            }
+
+            nav {
+                justify-content: center;
+                gap: 16px;
+            }
+
+            .contact-container {
+                grid-template-columns: 1fr;
+                gap: 35px;
+                padding: 45px 6%;
+            }
+
+            footer {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <a href="/" class="logo">OFFGRID</a>
+
+        <nav>
+            <a href="/">Home</a>
+            <a href="/shop">Shop</a>
+            <a href="/about">About</a>
+            <a href="/contact" class="active">Contact</a>
+            <a href="/cart">Cart</a>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <p class="eyebrow">Get in Touch</p>
+            <h1>LET'S TALK.</h1>
+            <p>
+                Have a question about an order, a product, or OFFGRID?
+                Send us a message.
+            </p>
+        </section>
+
+        <section class="contact-container">
+            <div>
+                <h2>Contact OFFGRID</h2>
+                <p class="intro">
+                    We're here to help with your questions and feedback.
+                    Complete the form and tell us how we can help.
+                </p>
+
+                <div class="detail">
+                    <h3>Email</h3>
+                    <p>Add your official business email here</p>
+                </div>
+
+                <div class="detail">
+                    <h3>Customer Support</h3>
+                    <p>For product, order and general enquiries.</p>
+                </div>
+
+                <div class="detail">
+                    <h3>Response Time</h3>
+                    <p>We'll aim to respond as soon as possible.</p>
+                </div>
+            </div>
+
+            <div>
+                <h2>Send a Message</h2>
+
+                <form id="contactForm">
+                    <div>
+                        <label for="name">Full Name</label>
+                        <input type="text" id="name" name="name"
+                               placeholder="Enter your name" required>
+                    </div>
+
+                    <div>
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" name="email"
+                               placeholder="Enter your email" required>
+                    </div>
+
+                    <div>
+                        <label for="subject">Subject</label>
+                        <input type="text" id="subject" name="subject"
+                               placeholder="What is your message about?" required>
+                    </div>
+
+                    <div>
+                        <label for="message">Message</label>
+                        <textarea id="message" name="message"
+                                  placeholder="Write your message here..."
+                                  required></textarea>
+                    </div>
+
+                    <button type="submit">SEND MESSAGE</button>
+
+                    <p class="form-note" id="formNote">
+                        The message form is currently a design preview.
+                    </p>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>© 2026 OFFGRID. All rights reserved.</p>
+        <p>Independent by nature.</p>
+    </footer>
+
+    <script>
+        document.getElementById("contactForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            document.getElementById("formNote").textContent =
+                "The form design works, but message delivery has not been connected yet.";
+        });
+    </script>
+
+</body>
+</html>
+```

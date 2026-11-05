@@ -1,0 +1,260 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Orders | OFFGRID</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #eae7df;
+            color: #171717;
+        }
+
+        header {
+            background: #111;
+            padding: 22px 7%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            color: white;
+            text-decoration: none;
+            font-size: 25px;
+            font-weight: 900;
+            letter-spacing: 2px;
+        }
+
+        .back {
+            color: white;
+            text-decoration: none;
+            font-size: 13px;
+        }
+
+        main {
+            max-width: 1000px;
+            margin: 50px auto;
+            padding: 0 20px;
+        }
+
+        h1 {
+            font-size: 34px;
+            letter-spacing: -1px;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #777;
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+
+        .order-card {
+            background: white;
+            border: 1px solid #ddd;
+            margin-bottom: 22px;
+        }
+
+        .order-header {
+            padding: 20px 24px;
+            background: #f5f4f0;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .order-header p {
+            font-size: 12px;
+            color: #777;
+            margin-bottom: 5px;
+        }
+
+        .order-header strong {
+            font-size: 14px;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 7px 12px;
+            background: #eee;
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .order-body {
+            padding: 22px 24px;
+        }
+
+        .item {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+        }
+
+        .item-details {
+            line-height: 1.7;
+        }
+
+        .item-details span {
+            display: block;
+            color: #777;
+            font-size: 12px;
+        }
+
+        .item-price {
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .order-total {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .empty {
+            background: white;
+            padding: 45px 25px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        .empty h2 {
+            margin-bottom: 12px;
+        }
+
+        .empty p {
+            color: #777;
+            font-size: 14px;
+            margin-bottom: 22px;
+        }
+
+        .shop-button {
+            display: inline-block;
+            background: #111;
+            color: white;
+            padding: 14px 24px;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        @media (max-width: 600px) {
+            main {
+                margin-top: 30px;
+            }
+
+            .order-header,
+            .order-body {
+                padding: 18px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <a href="{{ url_for('home') }}" class="logo">OFFGRID®</a>
+    <a href="{{ url_for('home') }}" class="back">← BACK TO STORE</a>
+</header>
+
+<main>
+
+    <h1>MY ORDERS.</h1>
+    <p class="subtitle">Your purchases, all in one place.</p>
+
+    {% if orders %}
+
+        {% for order in orders %}
+
+            <section class="order-card">
+
+                <div class="order-header">
+
+                    <div>
+                        <p>ORDER ID</p>
+                        <strong>#{{ order.order_id }}</strong>
+                    </div>
+
+                    <div>
+                        <p>ORDER DATE</p>
+                        <strong>{{ order.order_date }}</strong>
+                    </div>
+
+                    <div>
+                        <p>ORDER STATUS</p>
+                        <span class="status">{{ order.status }}</span>
+                    </div>
+
+                </div>
+
+                <div class="order-body">
+
+                    {% for item in order.items %}
+
+                        <div class="item">
+
+                            <div class="item-details">
+                                <strong>{{ item.product_name }}</strong>
+                                <span>
+                                    Size: {{ item.size }} |
+                                    Quantity: {{ item.quantity }}
+                                </span>
+                            </div>
+
+                            <div class="item-price">
+                                ₹{{ "%.2f"|format(item.price_at_purchase * item.quantity) }}
+                            </div>
+
+                        </div>
+
+                    {% endfor %}
+
+                    <div class="order-total">
+                        <span>ORDER TOTAL</span>
+                        <span>₹{{ "%.2f"|format(order.total_amount) }}</span>
+                    </div>
+
+                </div>
+
+            </section>
+
+        {% endfor %}
+
+    {% else %}
+
+        <div class="empty">
+            <h2>NO ORDERS YET.</h2>
+            <p>Your next favourite outfit might be waiting for you.</p>
+
+            <a href="{{ url_for('shop') }}" class="shop-button">
+                EXPLORE THE COLLECTION
+            </a>
+        </div>
+
+    {% endif %}
+
+</main>
+
+</body>
+</html>

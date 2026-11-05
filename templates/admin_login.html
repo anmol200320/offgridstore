@@ -1,0 +1,100 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OFFGRID | Admin Login</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #111;
+            color: white;
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-box {
+            width: 90%;
+            max-width: 400px;
+            background: #1b1b1b;
+            padding: 40px;
+            border: 1px solid #333;
+        }
+
+        h1 {
+            font-size: 30px;
+            letter-spacing: 4px;
+            margin-bottom: 10px;
+        }
+
+        p {
+            color: #999;
+            margin-bottom: 30px;
+        }
+
+        label {
+            display: block;
+            margin: 18px 0 8px;
+        }
+
+        input {
+            width: 100%;
+            padding: 13px;
+            background: #292929;
+            border: 1px solid #444;
+            color: white;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            margin-top: 25px;
+            background: white;
+            color: black;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #ccc;
+        }
+
+        .error {
+            color: #ff6666;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-box">
+        <h1>OFFGRID</h1>
+        <p>ADMINISTRATOR ACCESS</p>
+
+        <form method="POST">
+            <label>Email Address</label>
+            <input type="email" name="email" required>
+
+            <label>Password</label>
+            <input type="password" name="password" required>
+
+            <button type="submit">LOGIN</button>
+        </form>
+
+        {% if error %}
+            <div class="error">{{ error }}</div>
+        {% endif %}
+    </div>
+</body>
+</html>
+```

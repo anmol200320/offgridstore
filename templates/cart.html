@@ -1,0 +1,194 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OFFGRID® | Your Cart</title>
+
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            background: #f5f4ef;
+            color: #111;
+            font-family: Arial, sans-serif;
+        }
+
+        header {
+            padding: 22px 5%;
+            background: #111;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+
+        header h1 { letter-spacing: 4px; }
+        header a { color: white; text-decoration: none; }
+
+        main { padding: 35px 5%; }
+
+        .cart-item {
+            display: grid;
+            grid-template-columns: 110px 1fr;
+            gap: 20px;
+            padding: 20px 0;
+            border-bottom: 1px solid #ccc;
+        }
+
+        .cart-item img {
+            width: 110px;
+            height: 135px;
+            object-fit: cover;
+            background: #e5e5e5;
+        }
+
+        .cart-item h3 { margin-top: 0; }
+        .price { font-weight: bold; }
+
+        form {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin: 10px 0;
+        }
+
+        input, button {
+            padding: 10px;
+            font-size: 14px;
+        }
+
+        input { width: 75px; }
+
+        button {
+            border: 0;
+            background: #111;
+            color: white;
+            cursor: pointer;
+        }
+
+        button:hover { background: #333; }
+
+        .remove { background: #777; }
+
+        .summary {
+            margin-top: 30px;
+            padding: 24px;
+            background: #e6e4dd;
+            max-width: 480px;
+            margin-left: auto;
+        }
+
+        .total {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .continue {
+            display: inline-block;
+            margin-top: 20px;
+            color: #111;
+        }
+
+        .message {
+            padding: 10px;
+            background: #e5e5e5;
+        }
+
+        @media (max-width: 450px) {
+            .cart-item {
+                grid-template-columns: 85px 1fr;
+                gap: 12px;
+            }
+
+            .cart-item img {
+                width: 85px;
+                height: 110px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>OFFGRID®</h1>
+        <a href="/shop">CONTINUE SHOPPING</a>
+    </header>
+
+    <main>
+        <h2>YOUR CART</h2>
+
+        {% with messages = get_flashed_messages() %}
+            {% for message in messages %}
+                <p class="message">{{ message }}</p>
+            {% endfor %}
+        {% endwith %}
+
+        {% if cart_items %}
+            {% for item in cart_items %}
+                <article class="cart-item">
+
+                    {% if item.image_url %}
+                        <img
+                            src="{{ url_for('static', filename=item.image_url) }}"
+                            alt="{{ item.product_name }}"
+                        >
+                    {% endif %}
+
+                    <div>
+                        <h3>{{ item.product_name }}</h3>
+                        <p>Size: {{ item.size }}</p>
+                        <p>Price: ₹{{ "%.2f"|format(item.price) }}</p>
+                        <p>Line total: ₹{{ "%.2f"|format(item.line_total) }}</p>
+
+                        <form action="{{ url_for('update_cart') }}" method="POST">
+                            <input
+                                type="hidden"
+                                name="cart_key"
+                                value="{{ item.cart_key }}"
+                            >
+
+                            <label>
+                                Quantity
+                                <input
+                                    type="number"
+                                    name="quantity"
+                                    min="1"
+                                    max="{{ item.stock }}"
+                                    value="{{ item.quantity }}"
+                                    required
+                                >
+                            </label>
+
+                            <button type="submit">UPDATE</button>
+                        </form>
+
+                        <form action="{{ url_for('remove_from_cart') }}" method="POST">
+                            <input
+                                type="hidden"
+                                name="cart_key"
+                                value="{{ item.cart_key }}"
+                            >
+                            <button type="submit" class="remove">REMOVE</button>
+                        </form>
+                    </div>
+                </article>
+            {% endfor %}
+
+            <section class="summary">
+                <p>Subtotal</p>
+                <p class="total">₹{{ "%.2f"|format(subtotal) }}</p>
+                <p>Shipping and final charges will be calculated at checkout.</p>
+                <button type="button" disabled>CHECKOUT — COMING SOON</button>
+            </section>
+
+        {% else %}
+            <p>Your cart is empty.</p>
+            <a class="continue" href="/shop">Explore the latest drops →</a>
+        {% endif %}
+    </main>
+</body>
+</html>
